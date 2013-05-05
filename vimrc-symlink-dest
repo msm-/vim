@@ -1,10 +1,107 @@
+" Based on http://sontek.net/blog/detail/turning-vim-into-a-modern-python-ide
+
+" Use Vim defaults not Vi defaults
+" shouldn't be needed as a vimrc implies nocompatible
 set nocompatible
 
-execute pathogen#infect()
+filetype off
+call pathogen#runtime_append_all_bundles()
+call pathogen#helptags()
 
+" Leader is "," not "\"
+:let mapleader = ","
+
+" fold with za to open/close folds
+set foldmethod=indent
+set foldlevel=99
+
+" Standard vim window management:
+" Vertical Split : Ctrl+w + v
+" Horizontal Split: Ctrl+w + s
+" Close current windows: Ctrl+w + q
+"
+" aliases to move between windows using CTRL + normal movement keys, rather than CTRL-w + movement
+map <c-j> <c-w>j
+map <c-k> <c-w>k
+map <c-l> <c-w>l
+map <c-h> <c-w>h
+
+" snipmate is installed; see .vim/snippets and try out e.g. "def<tab>" then tab through template
+
+" Find TODOs and FIXMEs
+" you can hit <leader>td to open your task list and hit 'q' to close it.
+" You can also hit enter on the task to jump to the buffer and line that it is placed on.
+map <leader>td <Plug>TaskList
+
+" view diff's of every save on a file you've made and allow you to quickly revert back and forth
+map <leader>g :GundoToggle<CR>
+
+" Syntax highlighting. 
 syntax on
+filetype on
 filetype plugin indent on
 
+" The pyflakes bundle is installed so we invalid syntax warnings
+
+" PEP8 plugin, key binding to jump between violations
+let g:pep8_map='<leader>8'
+
+" Autocompletion using omni code completion, selected by SuperTab plugin
+au FileType python set omnifunc=pythoncomplete#Complete
+let g:SuperTabDefaultCompletionType = "context"
+set completeopt=menuone,longest,preview " enable lots of info from code completion
+
+" pydoc is installed, so <leader>pw on a module opens the module's documentation in a new window
+
+" Buffers
+" Open files with :e <filename> to place in a buffer.
+" minibufexpl plugin in in bundles, so you will already visually see every buffer opened.
+" You can also get a list of them doing :buffers.
+" You can switch between the buffers using b<number>, such as :b1 for the first buffer.
+" You can also use its name to match, so you can type :b mod<tab> to autocomplete opening the models.py buffer.
+" You need to make sure you are using the minibufexpl from my github since it has patches that make it much better to work with.
+" To close a buffer you use :bd or :bw.
+
+" <leader>t opens Command-T file open plugin. Start typing letters from file. Enter to open; CTRL-Enter to open in a horizontal split
+
+" Ropevim
+" Ropevim is also a great tool that will allow you to navigate around your code. It supports automatically inserting import statements, goto definition, refactoring, and code completion. You'll really want to read up on everything it does.
+" Goto definition
+map <leader>j :RopeGotoDefinition<CR>
+
+" Ack
+" Grep-like replacement, for searching within code
+" We use ! at the end of it so it doesn't open the first result automatically.
+nmap <leader>a <Esc>:Ack!
+
+" Git
+" git.vim gives syntax highlighting for git config files
+" fugitive provides a great interface for interacting with git including getting diffs, status updates, committing, and moving files.
+" Fugitive also allows you to view what branch you are working in directly from vim:
+%{fugitive#statusline()}
+"    Gblame: This allows you to view a line by line comparison of who the last person to touch that line of code is.
+"    Gwrite: This will stage your file for commit, basically doing git add <filename>
+"    Gread: This will basically run a git checkout <filename>
+"    Gcommit: This will just run git commit. Since its in a vim buffer, you can use keyword completion (Ctrl-N), like test_all<Ctrl-N> to find the method name in your buffer and complete it for the commit message. You can also use + and - on the filenames in the message to stage/unstage them for the commit.
+
+" MakeGreen plugin can be used for test integration
+" py.test also, specifiycally for python. http://sontek.net/blog/detail/turning-vim-into-a-modern-python-ide#id20
+
+" Virtualenv
+" Vim doesn't realize that you are in a virtualenv so it wont give you code completion for libraries only installed there
+" Add the virtualenv's site-packages to vim path
+py << EOF
+import os.path
+import sys
+import vim
+if 'VIRTUAL_ENV' in os.environ:
+    project_base_dir = os.environ['VIRTUAL_ENV']
+    sys.path.insert(0, project_base_dir)
+    activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
+    execfile(activate_this, dict(__file__=activate_this))
+EOF
+
+" Better % cycling (built in)
 runtime! macros/matchit.vim
 
 augroup myfiletypes
@@ -12,5 +109,4 @@ augroup myfiletypes
 	autocmd!
 	" autoindent with two spaces, always expand tabs
 	autocmd FileType ruby,eruby,yaml set ai shiftwidth=2 softtabstop=2 expandtab
-	autocmd FileType python set ai tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab
 augroup END
