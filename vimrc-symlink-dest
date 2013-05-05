@@ -5,7 +5,7 @@
 set nocompatible
 
 filetype off
-call pathogen#runtime_append_all_bundles()
+call pathogen#incubate()
 call pathogen#helptags()
 
 " Leader is "," not "\"
@@ -77,8 +77,34 @@ nmap <leader>a <Esc>:Ack!
 " Git
 " git.vim gives syntax highlighting for git config files
 " fugitive provides a great interface for interacting with git including getting diffs, status updates, committing, and moving files.
-" Fugitive also allows you to view what branch you are working in directly from vim:
-%{fugitive#statusline()}
+" Fugitive also allows you to view what branch you are working in directly from vim with %{fugitive#statusline()} in the statusline.
+"
+" statusline
+" " cf the default statusline: %<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %P
+" " format markers:
+" "   %< truncation point
+" "   %n buffer number
+" "   %f relative path to file
+" "   %m modified flag [+] (modified), [-] (unmodifiable) or nothing
+" "   %r readonly flag [RO]
+" "   %y filetype [ruby]
+" "   %= split point for left and right justification
+" "   %-35. width specification
+" "   %l current line number
+" "   %L number of lines in buffer
+" "   %c current column number
+" "   %V current virtual column number (-n), if different from %c
+" "   %P percentage through buffer
+" "   %) end of width specification
+set statusline =%<%f\ 
+set statusline +=%h%m%r\ 
+set statusline +=%{fugitive#statusline()}\ 
+set statusline +=%=%-14.(%l,%c%V%)\ %P
+" Wincent's: set statusline=%<\ %n:%f\ %m%r%y%=%-35.(line:\ %l\ of\ %L,\ col:\ %c%V\ (%P)%)
+" Consider setting laststatus=2 to make the line always visible, and tinker
+" with guibg ctermfg guifg ctermbg to make it less offensive
+
+
 "    Gblame: This allows you to view a line by line comparison of who the last person to touch that line of code is.
 "    Gwrite: This will stage your file for commit, basically doing git add <filename>
 "    Gread: This will basically run a git checkout <filename>
