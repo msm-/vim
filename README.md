@@ -1,4 +1,4 @@
 config
 ======
 
-My config files (.vimrc etc)
+My .vim folder
