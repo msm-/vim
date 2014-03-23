@@ -1,9 +1,14 @@
 " Based on http://sontek.net/blog/detail/turning-vim-into-a-modern-python-ide
 
+" TIPS
+" F7 - run flake 8 (first: sudo pip install flake8)
+"
+
 " Use Vim defaults not Vi defaults
 " shouldn't be needed as a vimrc implies nocompatible
 set nocompatible
 
+" Need to install pathogen first - not in repo
 filetype off
 call pathogen#incubate()
 call pathogen#helptags()
@@ -37,19 +42,13 @@ map <leader>td <Plug>TaskList
 map <leader>g :GundoToggle<CR>
 
 " Syntax highlighting. 
+filetype plugin indent on "also turns filetype detection on
 syntax on
-filetype on
-filetype plugin indent on
-
-" The pyflakes bundle is installed so we invalid syntax warnings
-
-" PEP8 plugin, key binding to jump between violations
-let g:pep8_map='<leader>8'
 
 " Autocompletion using omni code completion, selected by SuperTab plugin
-au FileType python set omnifunc=pythoncomplete#Complete
-let g:SuperTabDefaultCompletionType = "context"
-set completeopt=menuone,longest,preview " enable lots of info from code completion
+"au FileType python set omnifunc=pythoncomplete#Complete
+"let g:SuperTabDefaultCompletionType = "context"
+"set completeopt=menuone,longest,preview " enable lots of info from code completion
 
 " pydoc is installed, so <leader>pw on a module opens the module's documentation in a new window
 
@@ -70,7 +69,8 @@ set completeopt=menuone,longest,preview " enable lots of info from code completi
 map <leader>j :RopeGotoDefinition<CR>
 
 " Ack
-" Grep-like replacement, for searching within code
+" Grep-like replacement, for searching within code. Need to install on system
+" first
 " We use ! at the end of it so it doesn't open the first result automatically.
 nmap <leader>a <Esc>:Ack!
 
@@ -135,4 +135,8 @@ augroup myfiletypes
 	autocmd!
 	" autoindent with two spaces, always expand tabs
 	autocmd FileType ruby,eruby,yaml set ai shiftwidth=2 softtabstop=2 expandtab
+	" The python indent plugin does intelligent shifting, but *based on
+	" these widths*. Tabstop is 8 for python - the interpreter treats hard
+	" tabs as 8 spaces.
+	autocmd FileType python set tabstop=8 shiftwidth=4 softtabstop=4 expandtab
 augroup END
